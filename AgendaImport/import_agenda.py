@@ -1,23 +1,19 @@
 from db_table import db_table
-from AgendaImport import agenda
 
 """
-Inputs: name of an excel file
-Ouputs: bool if file opened or not (True = opened, False = not opened)
-Function: checks to see if excel file can be openend
-"""
-
-def open_excel(ex_name):
-    print("Opening excel file...")
-
-"""
-Inputs: excel file (already opened), db_instance
-Ouputs: error if there is an issue
-Function: puts excel information into a df 
+Inputs: excel file name
+Ouputs: error if there is an issue, df if not issue
+Function: opens excel file, puts excel information into a df, returns dataframe, closes excel file
 """
 
 def create_df(ex_name):
+
+    print("Opening excel file and creating data frame ")
+
     print("Creating a data frame to make it easier to store into db...")
+
+    # start at row 15 and return a dataframe
+
 
 """
 Inputs: dataframe of an excel instance, db_instance
@@ -27,6 +23,14 @@ Function: puts df into a db
 """
 def store_db(df, sessions_table, sub_table):
     print("Storing df into a db instance...")
+
+    # go through the rows of the dataframe
+    
+    # if something is of type session
+        # insert into session table
+        # update previous session trackers: prev_session = id
+    # if something is of type subession
+        # insert into subsession
 
 
 """
@@ -38,21 +42,18 @@ Function: calls other functions
 
 def parse_store_excel(ex_name, sessions_table, sub_table):
 
-    print("Opening excel file...")
-    if ( not open_excel(ex_name)):
-        return "Error opening excel file..."
-    
-    print("Parsing excel file and storing into a data frame..")
+
+    print("Parsing excel file and storing into a data frame..\n")
     df = create_df(ex_name)
     if (not df):
-        return "Error create dataframe"
+        return "Error creating dataframe\n"
     
-    print("Storing dataframe in db")
+    print("Storing dataframe in db\n")
     store_db(df, sessions_table, sub_table)
     
 ########################################################
 
-if __init__ == "main":
+if __name__ == "__main__":
     print("Entering main function...")
 
     # creating schema for session
@@ -65,9 +66,11 @@ if __init__ == "main":
                   "Session_Title": "text", "Location": "text",
                   "Description": "text", "Speakers": "text", "Parent_ID": int}
     
+    create_df("agenda.xls")
+
     # creating tables instances
-    sessions_table = db_table("Session Table", session_schema)
-    sub_table = db_table("Subsession Table", sub_schema)
+    #sessions_table = db_table("Session Table", session_schema)
+    #sub_table = db_table("Subsession Table", sub_schema)
 
     # parsing and storing file in excel
-    parse_store_excel("agenda.xls", sessions_table, sub_table)
+    #parse_store_excel("agenda.xls", sessions_table, sub_table)
