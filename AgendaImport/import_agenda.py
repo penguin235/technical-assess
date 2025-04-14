@@ -56,18 +56,20 @@ if __name__ == "__main__":
     print("Entering main function...")
 
     # creating schema for session
-    session_schema = sub_schema = {"ID": int, "Date": "text", "Start_Time": "text",
+    session_schema = sub_schema = {"ID": "integer PRIMARY KEY", "Date": "text", "Start_Time": "text",
                   "Session_Title": "text", "Location": "text",
                   "Description": "text", "Speakers": "text"}
     
     # creating a schema for subsessions
-    sub_schema = {"ID": int, "Date": "text", "Start_Time": "text",
+    sub_schema = {"ID": "integer PRIMARY KEY", "Date": "text", "Start_Time": "text",
                   "Session_Title": "text", "Location": "text",
-                  "Description": "text", "Speakers": "text", "Parent_ID": int}
+                  "Description": "text", "Speakers": "text", "Parent_ID": "integer"}
 
     # creating tables instances
-    #sessions_table = db_table("Session Table", session_schema)
-    #sub_table = db_table("Subsession Table", sub_schema)
+    sessions_table = db_table("Sessions", session_schema)
+    sub_table = db_table("Subsessions", sub_schema)
+
+    
 
     # parsing and storing file in excel
     #parse_store_excel("agenda.xls", sessions_table, sub_table)
