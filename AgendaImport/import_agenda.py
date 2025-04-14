@@ -1,4 +1,5 @@
 from db_table import db_table
+import pandas as pd
 
 """
 Inputs: excel file name
@@ -8,12 +9,10 @@ Function: opens excel file, puts excel information into a df, returns dataframe,
 
 def create_df(ex_name):
 
-    print("Opening excel file and creating data frame ")
-
-    print("Creating a data frame to make it easier to store into db...")
-
-    # start at row 15 and return a dataframe
-
+    print("Opening excel file and creating data frame\n")
+    print("Creating a data frame to make it easier to store into db...\n")
+    df = pd.read_excel(ex_name, skiprows=14)
+    return df
 
 """
 Inputs: dataframe of an excel instance, db_instance
@@ -65,8 +64,6 @@ if __name__ == "__main__":
     sub_schema = {"ID": int, "Date": "text", "Start_Time": "text",
                   "Session_Title": "text", "Location": "text",
                   "Description": "text", "Speakers": "text", "Parent_ID": int}
-    
-    create_df("agenda.xls")
 
     # creating tables instances
     #sessions_table = db_table("Session Table", session_schema)
