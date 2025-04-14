@@ -14,7 +14,6 @@ def open_excel(ex_name):
 Inputs: excel file (already opened), db_instance
 Ouputs: error if there is an issue
 Function: puts excel information into a df 
-
 """
 
 def create_df(ex_name):
@@ -26,18 +25,18 @@ Ouputs: error if there is an issue
 Function: puts df into a db
 
 """
-def store_db(df, db_instance):
+def store_db(df, sessions_table, sub_table):
     print("Storing df into a db instance...")
 
 
 """
-Inputs: excel file (already opened), db_instance
+Inputs: excel file (already opened), table 1, table 2
 Ouputs: error if there is an issue
 Function: calls other functions 
 
 """
 
-def parse_store_excel(ex_name, db_instance):
+def parse_store_excel(ex_name, sessions_table, sub_table):
 
     print("Opening excel file...")
     if ( not open_excel(ex_name)):
@@ -49,28 +48,26 @@ def parse_store_excel(ex_name, db_instance):
         return "Error create dataframe"
     
     print("Storing dataframe in db")
-    store_db(df, db_instance)
+    store_db(df, sessions_table, sub_table)
     
 ########################################################
-"""
-Inputs: 
-Outputs:
-Function: 
-"""
-def create_schema():
-
-    print("Creating a table schema...")
-
-
 
 if __init__ == "main":
     print("Entering main function...")
 
-    # creating schema
-    schema = create_schema()
+    # creating schema for session
+    session_schema = sub_schema = {"ID": int, "Date": "text", "Start_Time": "text",
+                  "Session_Title": "text", "Location": "text",
+                  "Description": "text", "Speakers": "text"}
     
-    # creating a db instance
-    db_instance = db_table("Agenda Tables", schema)
+    # creating a schema for subsessions
+    sub_schema = {"ID": int, "Date": "text", "Start_Time": "text",
+                  "Session_Title": "text", "Location": "text",
+                  "Description": "text", "Speakers": "text", "Parent_ID": int}
+    
+    # creating tables instances
+    sessions_table = db_table("Session Table", session_schema)
+    sub_table = db_table("Subsession Table", sub_schema)
 
-    # storing excel db file into db
-    parse_store_excel("agenda.xls", db_instance)
+    # parsing and storing file in excel
+    parse_store_excel("agenda.xls", sessions_table, sub_table)
