@@ -53,7 +53,7 @@ def store_db(df, sessions_table):
         
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
-            value["Parent"] = str(-1)
+            value["parent"] = str(-1)
             sessions_table.insert(value)
             print("Succesfully added this -> session: ", value)
             print()
