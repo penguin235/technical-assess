@@ -7,6 +7,16 @@ import tabulate
 
 def lookup(sessions_table, column, value):
 
+    """
+    Refinements/Task List:
+    - parameters: make value case-sensitive, type-safe (just can also give users a guide)
+    - remove excessive print statements
+    - refine table view
+    - clean up return values of items (if possible)
+    - try to go session, subsession, etc. 
+    
+    """
+
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
@@ -40,6 +50,12 @@ def lookup(sessions_table, column, value):
  
 
 def pretty_print(lookup_return):
+
+    """
+    Refinement/Tasks:
+    - automate printing as much as possible
+    - identify all possible return types (rather than NaN and String)
+    """
     print("Pretty printing the lookup values...")
     print("Creating chart/table...")
 
@@ -104,19 +120,28 @@ def pretty_print(lookup_return):
 
 if __name__ == "__main__":
 
+    """
+    Refinements/Tasks
+    - type checking for values (either specifiying to user or)
+    - more proper error handling: done
+    """
+
     # parse command line arguments
     if len(sys.argv) < 3:
-        print("Not enough arguments. Please try again with the following form: ")
-        
+        print(f"Not enough arguments. Please try again with the following form: python [lookup_agenda.py] [column] [value]")
+        sys.exit()
     elif len(sys.argv) > 3:
-        print("Too many arguments. Please try again with the following form: ")
+        print("Too many arguments. Please try again with the following form: python [lookup_agenda.py] [column] [value]")
+        sys.exit()
         
     # check if legitmate column
     column = sys.argv[1]
-    # TODO: remove id and parent from user-facing options
-    possible_columns = ["id", "date", "time_start", "time_end", "title", "location", "description", "speaker", "parent"]
+    possible_columns = ["date", "time_start", "time_end", "title", "location", "description", "speaker"]
     if column not in possible_columns:
-        print("Please pick a valid column -can pick any of these: ")
+        print("Please pick a valid column can pick any of these: date, time_start, time_end, title, location, description, speaker")
+        sys.exit()
+    
+    # set value parameter
     value = sys.argv[2]
     
     # creating schema for session table
@@ -130,10 +155,10 @@ if __name__ == "__main__":
 
     # Calling lookup according to user parameters
     print("Calling lookup on parameters...")
-    sessions = lookup(sessions_table, column, value)
+    sessions_list = lookup(sessions_table, column, value)
 
     # Taking all the valid sessions and printing them in a table format
-    pretty_print(sessions)
+    pretty_print(sessions_list)
 
 
 
