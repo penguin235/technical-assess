@@ -1,6 +1,6 @@
 from db_table import db_table
 import pandas as pd
-import ast
+import argparse
 
 """
 Inputs: excel file name
@@ -90,7 +90,14 @@ def parse_store_excel(ex_name, sessions_table):
 ########################################################
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parse
+
     print("Entering main function...")
+    
+
+
 
     # creating schema for session
     session_schema = {"ID": "integer PRIMARY KEY", "Date": "text", "Start_Time": "text", 
