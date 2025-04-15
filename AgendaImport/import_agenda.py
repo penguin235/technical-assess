@@ -114,5 +114,5 @@ if __name__ == "__main__":
     
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
-    parse_store_excel(, sessions_table)
+    parse_store_excel(sessions_table)
     print("Parsing and storing completed")
