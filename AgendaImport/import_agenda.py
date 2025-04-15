@@ -98,9 +98,10 @@ if __name__ == "__main__":
                       "Description": "text", "Speakers": "text", "Parent": "text"}    
 
     # creating tables instances
-    print("Creating table instances....")
+    print("Creating table instance....")
     sessions_table = db_table("Sessions", session_schema)
 
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
     parse_store_excel("agenda.xls", sessions_table)
+    print("Parsing and storing completed")
