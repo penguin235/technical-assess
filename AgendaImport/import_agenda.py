@@ -1,6 +1,7 @@
 from db_table import db_table
 import pandas as pd
 import argparse
+import sys
 
 """
 Inputs: excel file name
@@ -91,13 +92,17 @@ def parse_store_excel(ex_name, sessions_table):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
-
+    # parse command line arguments
+    print("Command line checks...")
+    if len(sys.argv) < 2:
+        print("Not enough arguments. Please try again with the following form: ")
+        
+    elif len(sys.argv) > 2:
+        print("Too many arguments. Please try again with the following form: ")
+        
     print("Entering main function...")
+    excel_name = sys.argv[1]
     
-
-
-
     # creating schema for session
     session_schema = {"ID": "integer PRIMARY KEY", "date": "text", "time_start": "text", 
                       "time_end": "text", "title": "text", "location": "text",
@@ -109,5 +114,5 @@ if __name__ == "__main__":
     
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
-    parse_store_excel("agenda.xls", sessions_table)
+    parse_store_excel(, sessions_table)
     print("Parsing and storing completed")
