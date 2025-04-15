@@ -30,26 +30,26 @@ def store_db(df, sessions_table):
 
     # value template
     value = {"ID": 0, 
-            "Date": "",
-            "Start_Time": "",
-            "End_Time": "",
-            "Session_Title": "", 
-            "Location": "",
-            "Description": "",
-            "Speakers": "",
-            "Parent": ""}
+            "date": "",
+            "time_start": "",
+            "time_end": "",
+            "title": "", 
+            "location": "",
+            "description": "",
+            "speaker": "",
+            "parent": ""}
     
     for index, row in df.iterrows():
 
         temp_dict = row.to_dict()
         value["ID"] = index
-        value["Date"] = temp_dict['*Date']
-        value["Start_Time"] = temp_dict['*Time Start']
-        value["End_Time"] = temp_dict['*Time End']
-        value["Session_Title"] = temp_dict['*Session Title']
-        value["Location"] = temp_dict['Room/Location']
-        value["Description"] = temp_dict['Description']
-        value["Speakers"] = temp_dict['Speakers']
+        value["date"] = temp_dict['*Date']
+        value["time_start"] = temp_dict['*Time Start']
+        value["time_start"] = temp_dict['*Time End']
+        value["title"] = temp_dict['*Session Title']
+        value["location"] = temp_dict['Room/Location']
+        value["description"] = temp_dict['Description']
+        value["speaker"] = temp_dict['Speakers']
         
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
@@ -62,7 +62,7 @@ def store_db(df, sessions_table):
         if ((row['*Session or \nSub-session(Sub)']) == "Sub"):
             print("Entering sub function")
 
-            value["Parent"] = str(prev_session)
+            value["parent"] = str(prev_session)
             sessions_table.insert(value)
             print("Succesfully added this -> subsession: ", value)
             print()
@@ -92,7 +92,6 @@ def parse_store_excel(ex_name, sessions_table):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parse
 
     print("Entering main function...")
     
@@ -100,14 +99,14 @@ if __name__ == "__main__":
 
 
     # creating schema for session
-    session_schema = {"ID": "integer PRIMARY KEY", "Date": "text", "Start_Time": "text", 
-                      "End_Time": "text", "Session_Title": "text", "Location": "text",
-                      "Description": "text", "Speakers": "text", "Parent": "text"}    
+    session_schema = {"ID": "integer PRIMARY KEY", "date": "text", "time_start": "text", 
+                      "time_end": "text", "title": "text", "location": "text",
+                      "description": "text", "speaker": "text", "parent": "text"}    
 
     # creating tables instances
     print("Creating table instance....")
     sessions_table = db_table("Sessions", session_schema)
-
+    
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
     parse_store_excel("agenda.xls", sessions_table)
