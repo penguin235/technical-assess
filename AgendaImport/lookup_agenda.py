@@ -13,7 +13,7 @@ def lookup(db_table, column, value):
     for i in standard_return:
         print("ID:", i["id"], "Title:", i["title"])
     print()
-
+ 
 
     # check
     for i, v in enumerate(standard_return):
