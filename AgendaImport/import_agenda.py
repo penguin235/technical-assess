@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import argparse
 import sys
+import os
 
 """
 Inputs: @param: excel file name
@@ -36,7 +37,7 @@ Function: puts df into a db
     - inserts sessions into sessions table
 
 """
-def store_db(df, sessions_table):
+def store_db(df, sessions_table, speakers_table):
     print("Storing df into a db instance...")
 
     """"
@@ -149,7 +150,7 @@ Function:
     - calls create df to create a dataframe of the excel sheet
     - calls store db to store the dataframe into the sessions table
 """
-def parse_store_excel(ex_name, sessions_table):
+def parse_store_excel(ex_name, sessions_table, speakers_table):
 
     # creating df
     print("Parsing excel file and storing into a data frame in parse_store_excel..")
@@ -160,7 +161,7 @@ def parse_store_excel(ex_name, sessions_table):
     else:
         # storing db
         print("Storing dataframe in db in parse_store_excel...")
-        store_db(df, sessions_table)
+        store_db(df, sessions_table, speakers_table)
     
 ########################################################
 """
@@ -186,6 +187,9 @@ if __name__ == "__main__":
     # valid command line arguments - proceed with main
     print("Entering main function...")
     excel_name = sys.argv[1]
+
+    if os.path.exists("interview_test.db"):
+        os.remove("interview_test.db")
     
     # creating schema for session
     session_schema = {"ID": "integer PRIMARY KEY", "date": "text", "time_start": "text", 
@@ -208,5 +212,5 @@ if __name__ == "__main__":
 
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
-    parse_store_excel(excel_name, sessions_table)
+    parse_store_excel(excel_name, sessions_table, speakers_table)
     print("Parsing and storing into database table completed.")

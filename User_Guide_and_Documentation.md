@@ -49,6 +49,7 @@ DOCUMENTATION
 main:
 - addresses command line inputs
 - contains schema for sessions and speakers table
+- deletes existing instance of interview_db
 - creates instances of `db_table` for sessions and speakers
 - calls `parse_store_excel`
 
@@ -137,3 +138,11 @@ Function:
 - I was unable to perform a search query for Tim Harris. 
 - At moment, I do not have a testing suite. I tested on command line. For future development, I would ideally create a testing suite for imports and lookups. 
 - Can also use python3 instead of python
+
+**Tests**
+- PyUnit framework used for some mild testing
+
+**Future Plan**
+- resolve the Tim Harris speaker issue
+- find an alternative implementation for select that does not modify existing implementation
+- add more unit testing, especially for invalid inputs
