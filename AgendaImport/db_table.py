@@ -87,21 +87,32 @@ class db_table:
         
         result = []
         """
-
+        
         columns_query_string = ", ".join(columns)
         query                = "SELECT %s FROM %s" % (columns_query_string, self.name)
+        
         # build where query string
+        """
         if where:
             where_query_string = [ "%s = '%s'" % (k,v) for k,v in where.items() ]
             query             += " WHERE " + ' AND '.join(where_query_string)
-        
+        """
+        # AI generated modifications to SQL wrapper 
+        if where:
+            keys = where.keys()
+            where_query_string = [f"{k} = ?" for k in keys]
+            query += " WHERE " + ' AND '.join(where_query_string)
+            params = tuple(where[k] for k in keys)
+        else:
+            params = ()
+
         result = []
         # SELECT id, name FROM users [ WHERE id=42 AND name=John ]
         #
         # Note that columns are formatted into the string without using sqlite safe substitution mechanism
         # The reason is that sqlite does not provide substitution mechanism for columns parameters
         # In the context of this project, this is fine (no risk of user malicious input)
-        for row in self.db_conn.execute(query):
+        for row in self.db_conn.execute(query, params):
             result_row = {}
             # convert from (val1, val2, val3) to { col1: val1, col2: val2, col3: val3 }
             for i in range(0, len(columns)):
