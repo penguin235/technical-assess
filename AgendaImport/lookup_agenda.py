@@ -65,7 +65,7 @@ def speaker_query(speaker):
     # error handling
     if (speaker =="Tim Harris"):
         print("Unable to process request, please try with another speaker.")
-        sys.exit(1)
+        raise SystemExit
     
     standard_return = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
     # getting all the sessions that this speaker is in
@@ -141,18 +141,18 @@ if __name__ == "__main__":
     # parse command line arguments
     if len(sys.argv) < 3:
         print("Not enough arguments. Please try again with the following form: $ python lookup_agenda.py \"column\" \"value\"")
-        sys.exit()
+        raise SystemExit
     elif len(sys.argv) > 3:
         print("Too many arguments. Please try again with the following form: $ python lookup_agenda.py \"column\" \"value\" ")
         print("If your column or value argument is more than one word, please use the following format: $ python lookup_agenda.py \"column\" \"value\"")
-        sys.exit()
+        raise SystemExit
         
     # check if legitmate column
     column = sys.argv[1]
     possible_columns = ["date", "time_start", "time_end", "title", "location", "description", "speaker"]
     if column not in possible_columns:
         print("Please pick a valid column out of the following selection: date, time_start, time_end, title, location, description, speaker")
-        sys.exit()
+        raise SystemExit
     
     value = sys.argv[2]
     
@@ -188,15 +188,15 @@ if __name__ == "__main__":
     elif (column == "time_start") or (column == "time_end"):
         if value.find("AM") == -1 and value.find("PM") == -1:
             print("Please search for a date in the following format: \"HH:MM AM\" or \"HH:MM PM\"")
-            sys.exit()
+            raise SystemExit
     elif (column == "date"):
         if value.find("'/'") == -1 or len(value) != 10:
             print("Please search for a date using the following format: \"MM/DD/YYYY\"")
-            sys.exit()
+            raise SystemExit
     elif (column == "speaker"):
         if len(value.split(" ")) < 2:
             print("Please search for a speaker with both first and last name (and middle name if applicable) in the following format: \"First Last\"")
-            sys.exit()
+            raise SystemExit
     elif (column == "description"):
         if value.find("\'") >= 0:
             value.replace("\'", "\'\'")
