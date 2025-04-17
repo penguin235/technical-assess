@@ -9,10 +9,11 @@ def lookup(sessions_table, column, value):
 
     """
     Refinements/Task List:
-    - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
+    - PRIMARY FUNCTION: replace any '' with '
+    - (Completed) PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
         - (Completed): case - all lower, all upper, capitalized
-        - TODO: run query on multiple speakers
-        - Cimpleted: run query on descriptions with apostrophe's
+        - (Completed): run query on multiple speakers
+        - (Completed): run query on descriptions with apostrophe's
         - Dependency: import_agenda.py - determine query value
         - (complete): handled 1+ word arguments in main. directed user to use quotations
     - (unclear goal) CLEANUP: clean up return values of items (if possible)
@@ -97,13 +98,16 @@ def pretty_print(lookup_return):
         - (Completed) DEPENDENCY: import_agenda.py
     """
     print("Pretty printing the lookup values...")
-    print("Creating chart/table...")
+    if (len(lookup_return) == 0):
+        print()
+        print("No results found for query. If this is unexpected behavior, please refer to \"User_Guide_and_Documentation.md\" for proper input formatting.")
 
     # what to print: Title, Location, Description, Session/Subsession of What
 
     # returned values: 'id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title']
     # printed values:  'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker'
     #tabulate_table = []
+
     count = 1 
     for i in lookup_return:
         # print("processing this item right now: ", i)
