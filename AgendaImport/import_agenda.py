@@ -1,6 +1,7 @@
 from types import NoneType
 from db_table import db_table
 import pandas as pd
+import numpy as np
 import argparse
 import sys
 
@@ -61,8 +62,8 @@ def store_db(df, sessions_table):
         value["speaker"] = temp_dict['Speakers']
 
         for v in value.keys():
-            if isinstance(value[v], isNa()):
-                print("This is a NaN")
+            if (type(value[v]) == float):
+                value[v] = "None Present"
         
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
