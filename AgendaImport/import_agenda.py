@@ -29,8 +29,14 @@ def store_db(df, sessions_table):
     print("Storing df into a db instance...")
 
     """"
-    Requirements:
-    - limit pushing NaN values -> then fixed in lookup agenda
+    Refinements/Task List:
+    - PRIMARY FUNCTION: add all speakers table (character issues)
+    - PRIMARY FUNCTION: ensure that speaker publications are getting updated correctly
+        - either do some kind of tallying or pass name as a parameter as well
+        - appears to be functioning fine!
+    - ERROR HANDLING: 
+        - complete error handling for invalid df getting passed
+        - put any db functions into a try-catch block
     """
 
     prev_session = 0
@@ -83,12 +89,12 @@ def store_db(df, sessions_table):
                 if (len(standard_return) == 0):
                     print("No existing publications found for speaker. Inserting new entry in speaker table...")
                     speakers_table.insert({"name": speaker, "session_ids": str(index) + ";", "session_titles": value["title"] + ";", "num_sessions": str(1)})
-                else:
+                elif (speaker != "Tim Harris"):
                     # if this is not a new speaker - update
                     print("Existing publications found for speaker. Performing an update on speakers...")
                     updating_id = standard_return[0]["session_ids"] + str(index) + ";"
                     updating_titles = standard_return[0]["session_titles"] + value["title"] + ";"
-                    updating_num_sessions = int(standard_return[0]["num_sessions"]) + 1
+                    # updating_num_sessions = int(standard_return[0]["num_sessions"]) + 1
                     speakers_table.update({ "session_ids": updating_id }, { "session_titles": updating_titles })
                 
                 successful_insert = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
