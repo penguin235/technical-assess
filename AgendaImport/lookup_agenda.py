@@ -9,10 +9,11 @@ def lookup(sessions_table, column, value):
 
     """
     Refinements/Task List:
-    - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
+    - PRIMARY FUNCTION: replace any '' with '
+    - (Completed) PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
         - (Completed): case - all lower, all upper, capitalized
-        - TODO: run query on multiple speakers
-        - Cimpleted: run query on descriptions with apostrophe's
+        - (Completed): run query on multiple speakers
+        - (Completed): run query on descriptions with apostrophe's
         - Dependency: import_agenda.py - determine query value
         - (complete): handled 1+ word arguments in main. directed user to use quotations
     - (unclear goal) CLEANUP: clean up return values of items (if possible)

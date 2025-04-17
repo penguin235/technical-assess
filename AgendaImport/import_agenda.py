@@ -13,7 +13,7 @@ Function: opens excel file, puts excel information into a df, returns dataframe,
 
 def create_df(ex_name):
 
-    print("Opening excel file and creating data frame")
+    print("Opening excel file and creating data frame...")
     print("Creating a data frame to make it easier to store into db...")
     df = pd.read_excel(ex_name, skiprows=14)
     #print(df)
@@ -148,7 +148,8 @@ if __name__ == "__main__":
     elif len(sys.argv) > 2:
         print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
         sys.exit()
-        
+    
+    # valid command line arguments - proceed with main
     print("Entering main function...")
     excel_name = sys.argv[1]
     
@@ -161,11 +162,13 @@ if __name__ == "__main__":
     print("Creating session table instance....")
     sessions_table = db_table("Sessions", session_schema)
 
+    # creating speaker schema
     speaker_schema = {"name": "text", 
                     "session_ids": "text", 
                     "session_titles": "text", 
                     "num_sessions": "text"}
     
+    # creating speaker table instance
     print("Creating speaker table instance....")
     speakers_table = db_table("Speakers", speaker_schema)
 
