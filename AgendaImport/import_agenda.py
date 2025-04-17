@@ -41,7 +41,9 @@ def store_db(df, sessions_table):
     """
 
     prev_session = 0
-    # TODO: add error handling for checking instances of tables and of df
+    if df is None:
+        print("No dataframe found to store in table.")
+        raise RuntimeError("No dataframe to store in database.")
 
     # value template
     value = {"ID": 0, 
