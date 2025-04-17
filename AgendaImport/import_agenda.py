@@ -1,3 +1,4 @@
+from types import NoneType
 from db_table import db_table
 import pandas as pd
 import argparse
@@ -26,6 +27,11 @@ Function: puts df into a db
 def store_db(df, sessions_table):
     print("Storing df into a db instance...")
 
+    """"
+    Requirements:
+    - limit pushing NaN values -> then fixed in lookup agenda
+    """
+
     prev_session = 0
     # TODO: add error handling for checking instances of tables and of df
 
@@ -38,7 +44,9 @@ def store_db(df, sessions_table):
             "location": "",
             "description": "",
             "speaker": "",
-            "parent": ""}
+            "parent": "", 
+            "parent_title": ""}
+
     
     for index, row in df.iterrows():
 
@@ -51,6 +59,10 @@ def store_db(df, sessions_table):
         value["location"] = temp_dict['Room/Location']
         value["description"] = temp_dict['Description']
         value["speaker"] = temp_dict['Speakers']
+
+        for v in value.keys():
+            if isinstance(value[v], isNa()):
+                print("This is a NaN")
         
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
@@ -59,11 +71,13 @@ def store_db(df, sessions_table):
             print("Succesfully added this -> session: ", value)
             print()
             prev_session = index
+            session_name = value["title"]
 
         if ((row['*Session or \nSub-session(Sub)']) == "Sub"):
             print("Entering sub function")
 
             value["parent"] = str(prev_session)
+            value["parent_title"] = session_name
             sessions_table.insert(value)
             print("Succesfully added this -> subsession: ", value)
             print()
@@ -76,7 +90,6 @@ Ouputs: error if there is an issue
 Function: calls other functions 
 
 """
-
 def parse_store_excel(ex_name, sessions_table):
 
 
@@ -106,7 +119,7 @@ if __name__ == "__main__":
     # creating schema for session
     session_schema = {"ID": "integer PRIMARY KEY", "date": "text", "time_start": "text", 
                       "time_end": "text", "title": "text", "location": "text",
-                      "description": "text", "speaker": "text", "parent": "text"}    
+                      "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"}    
 
     # creating tables instances
     print("Creating table instance....")
@@ -114,5 +127,5 @@ if __name__ == "__main__":
     
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
-    parse_store_excel(sessions_table)
+    parse_store_excel(excel_name, sessions_table)
     print("Parsing and storing completed")

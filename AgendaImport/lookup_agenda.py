@@ -9,19 +9,23 @@ def lookup(sessions_table, column, value):
 
     """
     Refinements/Task List:
-    - parameters: make value case-sensitive, type-safe (just can also give users a guide)
-    - remove excessive print statements
-    - refine table view
-    - clean up return values of items (if possible)
-    - try to go session, subsession, etc. 
+    - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
+    - PRIMARY FUNCTION: from each table entry: ensure everything needs to be returned
+        - DEPENDENCY: import_agenda.py - ensure everything is stored correctly
+    - CLEANUP: remove excessive print statements / outputs
+    - CLEANUP: clean up return values of items (if possible)
+    - STRETCH: try to go session, subsession, rather than sessions -> subsession
     
     """
 
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
-    standard_return = sessions_table.select(['id', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
+    # retrieving all values instead of just a select few
+    standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
     print("Extracted", len(standard_return), " sessions and subsessions that match this parameter")
+
+    # parse through for speakers, etc. just to make sure information is accurate
     for i in standard_return:
         print("ID:", i["id"], " | Title:", i["title"], " | Parent:", i["parent"])
     print()
@@ -53,8 +57,12 @@ def pretty_print(lookup_return):
 
     """
     Refinement/Tasks:
-    - automate printing as much as possible
-    - identify all possible return types (rather than NaN and String)
+    - PRIMARY FUNCTION: type checking in return values (NaN, String)
+        - DEPENDENCY: lookup function - altering what gets returned from look up
+        - DEPENDENCY: import_agenda.py
+    - PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
+    - PRIMARY FUNCTION: improve table view (cutting off large returns, aligning columns), and possibly add an extended list
+    - STRETCH: prompt to ask to see extended few of an entry that has been cutoff
     """
     print("Pretty printing the lookup values...")
     print("Creating chart/table...")
