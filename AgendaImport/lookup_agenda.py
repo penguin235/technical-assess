@@ -3,7 +3,6 @@ from db_table import db_table
 import pandas as pd
 import argparse
 import sys
-import tabulate
 
 
 """
@@ -91,7 +90,6 @@ Function:
 """
 def pretty_print(lookup_return):
 
-    print("Pretty printing the lookup values...")
     if (len(lookup_return) == 0):
         print()
         print("No results found for query. If this is unexpected behavior, please refer to \"User_Guide_and_Documentation.md\" for proper input formatting.")
@@ -99,6 +97,7 @@ def pretty_print(lookup_return):
     # returned values: 'id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title']
     # printed values:  'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker'
 
+    print("Pretty printing the lookup values...")
     count = 1 
     for i in lookup_return:
         # print("processing this item right now: ", i)
