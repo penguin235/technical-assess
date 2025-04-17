@@ -76,7 +76,18 @@ class db_table:
         if not columns:
             columns = [ k for k in self.schema ]
 
-        # build query string
+        # build query string - OLD 
+        """
+        columns_query_string = ", ".join(columns)
+        query                = "SELECT %s FROM %s" % (columns_query_string, self.name)
+        # build where query string
+        if where:
+            where_query_string = [ "%s = '%s'" % (k,v) for k,v in where.items() ]
+            query             += " WHERE " + ' AND '.join(where_query_string)
+        
+        result = []
+        """
+
         columns_query_string = ", ".join(columns)
         query                = "SELECT %s FROM %s" % (columns_query_string, self.name)
         # build where query string
