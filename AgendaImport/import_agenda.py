@@ -120,23 +120,31 @@ def store_db(df, sessions_table):
             
 
 """
-Inputs: excel file (already opened), table 1, table 2
+Inputs: @param: excel file (str), sessions table (db_table)
 Ouputs: error if there is an issue
-Function: calls other functions 
-
+Function: 
+    - calls create df to create a dataframe of the excel sheet
+    - calls store db to store the dataframe into the sessions table
 """
 def parse_store_excel(ex_name, sessions_table):
 
-
+    # creating df
     print("Parsing excel file and storing into a data frame in parse_store_excel..")
     df = create_df(ex_name)
-
-    # TODO: add error handling for invalid db
     
+    # storing db
     print("Storing dataframe in db in parse_store_excel...")
     store_db(df, sessions_table)
     
 ########################################################
+"""
+Main:
+- addresses command line inputs
+- contains schema for sessions and speakers table
+- creates instances of `db_table` for sessions and speakers
+- calls `parse_store_excel`
+
+"""
 
 if __name__ == "__main__":
 
@@ -144,10 +152,10 @@ if __name__ == "__main__":
     print("Command line checks...")
     if len(sys.argv) < 2:
         print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
-        sys.exit()
+        sys.exit(1)
     elif len(sys.argv) > 2:
         print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
-        sys.exit()
+        sys.exit(1)
     
     # valid command line arguments - proceed with main
     print("Entering main function...")
