@@ -16,7 +16,7 @@ def create_df(ex_name):
     print("Opening excel file and creating data frame\n")
     print("Creating a data frame to make it easier to store into db...\n")
     df = pd.read_excel(ex_name, skiprows=14)
-    print(df)
+    #print(df)
     return df
 
 """
@@ -26,7 +26,7 @@ Function: puts df into a db
 
 """
 def store_db(df, sessions_table):
-    print("Storing df into a db instance...")
+    print("Storing df into a db instance...\n")
 
     """"
     Refinements/Task List:
@@ -42,9 +42,6 @@ def store_db(df, sessions_table):
 
     prev_session = 0
     # TODO: add error handling for checking instances of tables and of df
-
-    # TODO: create a speakers instance
-
 
     # value template
     value = {"ID": 0, 
@@ -81,18 +78,18 @@ def store_db(df, sessions_table):
 
         if value["speaker"] != "None Present":
             for speaker in value["speaker"].split(";"):
-                print("Processing this speaker:", speaker)
+                #print("Processing this speaker:", speaker)
             
                 # should only be one value in standard return array
-                print("Identifying if there are existing publications for speaker....")
+                #print("Identifying if there are existing publications for speaker....")
                 standard_return = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
                 # this is a new speaker - insert
                 if (len(standard_return) == 0):
-                    print("No existing publications found for speaker. Inserting new entry in speaker table...")
+                    #print("No existing publications found for speaker. Inserting new entry in speaker table...")
                     speakers_table.insert({"name": speaker, "session_ids": str(index) + ";", "session_titles": value["title"] + ";", "num_sessions": str(1)})
                 elif (speaker != "Tim Harris"):
                     # if this is not a new speaker - update
-                    print("Existing publications found for speaker. Performing an update on speakers...")
+                    #print("Existing publications found for speaker. Performing an update on speakers...")
                     updating_id = standard_return[0]["session_ids"] + str(index) + ";"
                     updating_titles = standard_return[0]["session_titles"] + value["title"] + ";"
                     # updating_num_sessions = int(standard_return[0]["num_sessions"]) + 1
@@ -100,14 +97,14 @@ def store_db(df, sessions_table):
                 
                 successful_insert = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
                 #print("Speaker:", successful_insert[0]["name"], "now has", successful_insert[0]["num_sessions"], "sessions")
-                print()
+                #print()
         # identifying if session or subsession
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
             value["parent"] = str(-1)
             sessions_table.insert(value)
             #print("Succesfully added this -> session: ", value)
-            print()
+            #print()
             prev_session = index
             session_name = value["title"]
 
@@ -118,7 +115,7 @@ def store_db(df, sessions_table):
             value["parent_title"] = session_name
             sessions_table.insert(value)
             #print("Succesfully added this -> subsession: ", value)
-            print()
+            #print()
         
             
 
@@ -144,15 +141,15 @@ def parse_store_excel(ex_name, sessions_table):
 if __name__ == "__main__":
 
     # parse command line arguments
-    print("Command line checks...")
+    print("Command line checks...\n")
     if len(sys.argv) < 2:
-        print("Not enough arguments. Please try again with the following form: ")
+        print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
         sys.exit()
     elif len(sys.argv) > 2:
-        print("Too many arguments. Please try again with the following form: ")
+        print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
         sys.exit()
         
-    print("Entering main function...")
+    print("Entering main function...\n")
     excel_name = sys.argv[1]
     
     # creating schema for session
@@ -161,7 +158,7 @@ if __name__ == "__main__":
                       "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"}    
 
     # creating tables instances
-    print("Creating table instance....")
+    print("Creating session table instance....\n")
     sessions_table = db_table("Sessions", session_schema)
 
     speaker_schema = {"name": "text", 
@@ -169,9 +166,10 @@ if __name__ == "__main__":
                     "session_titles": "text", 
                     "num_sessions": "text"}
     
+    print("Creating speaker table instance....\n")
     speakers_table = db_table("Speakers", speaker_schema)
 
     # parsing and storing file in excel
-    print("Calling parse_store_excel...")
+    print("Calling parse_store_excel...\n")
     parse_store_excel(excel_name, sessions_table)
-    print("Parsing and storing completed")
+    print("Parsing and storing into database table completed.\n")

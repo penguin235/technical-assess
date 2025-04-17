@@ -20,7 +20,7 @@ def lookup(sessions_table, column, value):
         - Dependency: pretty_print
     """
 
-    print("Retrieving all sessions and subsessions that match lookup parameters...")
+    print("Retrieving all sessions and subsessions that match lookup parameters...\n")
 
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
@@ -28,7 +28,7 @@ def lookup(sessions_table, column, value):
     # improving case sensitivity
 
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
-    print("Extracted", len(standard_return), "sessions and subsessions that match this parameter")
+    print("Extracted", len(standard_return), "sessions and subsessions that match this parameter.\n")
 
     """
     # parse through for speakers, etc. just to make sure information is accurate
@@ -37,7 +37,7 @@ def lookup(sessions_table, column, value):
     print()
     """
     
-    print("Retrieving subsessions of selected sessions...")
+    print("Retrieving subsessions of selected sessions...\n")
     # check for subsections within the standard array
 
     # earlier statment saying something was going wrong here - confirm proper function
@@ -76,7 +76,7 @@ def speaker_query(speaker):
     # prepping the array that will get returned
     return_array = []
     for s in speaker_sessions:
-        print("Calling internal lookup on this session the speaker is involved in:", s)
+        print("Calling internal lookup on this session the speaker is involved in:", s, "\n")
         return_array += lookup(sessions_table, "title", s)
 
     return return_array
@@ -93,8 +93,8 @@ def pretty_print(lookup_return):
         - (Complete) DEPENDENCY: lookup function - altering what gets returned from look up
         - (Completed) DEPENDENCY: import_agenda.py
     """
-    print("Pretty printing the lookup values...")
-    print("Creating chart/table...")
+    print("Pretty printing the lookup values...\n")
+    print("Creating chart/table...\n")
 
     # what to print: Title, Location, Description, Session/Subsession of What
 
@@ -166,18 +166,18 @@ if __name__ == "__main__":
 
     # parse command line arguments
     if len(sys.argv) < 3:
-        print(f"Not enough arguments. Please try again with the following form: $ python [lookup_agenda.py] column value")
+        print("Not enough arguments. Please try again with the following form: $ python lookup_agenda.py \"column\" \"value\"")
         sys.exit()
     elif len(sys.argv) > 3:
-        print("Too many arguments. Please try again with the following form: $ python [lookup_agenda.py] [column] [value]")
-        print("If your column or value argument is more than one word, please use the following format: $ python [lookup_agenda.py] \"column\" \"value\"")
+        print("Too many arguments. Please try again with the following form: $ python lookup_agenda.py \"column\" \"value\" ")
+        print("If your column or value argument is more than one word, please use the following format: $ python lookup_agenda.py \"column\" \"value\"")
         sys.exit()
         
     # check if legitmate column
     column = sys.argv[1]
     possible_columns = ["date", "time_start", "time_end", "title", "location", "description", "speaker"]
     if column not in possible_columns:
-        print("Please pick a valid column can pick any of these: date, time_start, time_end, title, location, description, speaker")
+        print("Please pick a valid column out of the following selection: date, time_start, time_end, title, location, description, speaker")
         sys.exit()
     
     value = sys.argv[2]
@@ -186,7 +186,7 @@ if __name__ == "__main__":
        
     if (type(value) == str) and ("\'" in value):
         (value).replace('\'', '\"')
-        print("Changed!", value)
+        #print("Changed!", value)
     
     # set value parameter
     
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                       "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"} 
 
     # opening tables instance
-    print("Opening table instance....")
+    print("Opening sessions table instance....\n")
     sessions_table = db_table("Sessions", session_schema)
 
     speaker_schema = {"name": "text", 
@@ -204,22 +204,20 @@ if __name__ == "__main__":
                     "session_titles": "text", 
                     "num_sessions": "text"}
     
-    speakers_table = db_table("Speakers", speaker_schema)
-
 
     # value checking/changing - exiting program if user doesn't have the correct input
     if (column == "location"):
         value = value.capitalize()
-        print("calling it on this", value)
+        # print("calling it on this", value)
     elif (column == "title"):
         value = value.title()
     elif (column == "time_start") or (column == "time_end"):
         if value.find("AM") == -1 and value.find("PM") == -1:
-            print("Please search for a date in the following format: HH:MM AM or HH:MM PM")
+            print("Please search for a date in the following format: \"HH:MM AM\" or \"HH:MM PM\"")
             sys.exit()
     elif (column == "date"):
         if value.find("'/'") == -1 or len(value) != 10:
-            print("Please search for a date using the following format: MM/DD/YYYY")
+            print("Please search for a date using the following format: \"MM/DD/YYYY\"")
             sys.exit()
     elif (column == "speaker"):
         if len(value.split(" ")) < 2:
@@ -230,8 +228,10 @@ if __name__ == "__main__":
             value.replace("\'", "\'\'")
 
     # Calling lookup according to user parameters
-    print("Calling lookup on parameters...")
+    print("Calling lookup on query...\n")
     if (column == "speaker"):
+        print("Opening speakers table instance...\n")
+        speakers_table = db_table("Speakers", speaker_schema)
         sessions_list = speaker_query(value)
     else:
         sessions_list = lookup(sessions_table, column, value)
