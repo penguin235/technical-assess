@@ -29,6 +29,11 @@ def create_df(ex_name):
 Inputs: @param: dataframe of an excel instance, db_instance
 Ouputs: error if there is an issue
 Function: puts df into a db
+    - extracts row from df, puts into a dict object
+    - cleans data
+    - inserts speakers into speakers table
+    - identifies session, subsession relationship
+    - inserts sessions into sessions table
 
 """
 def store_db(df, sessions_table):
