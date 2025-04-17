@@ -5,9 +5,8 @@ DOCUMENTATION
 # How to Run Program
 1. cd into AgendaImport. 
 2. Create a virtual environment in repository and activate.
-3. Install requirements on command line using: pip -r install requirements.txt
+3. Install requirements on command line using: pip install -r requirements.txt
 4. Call import: $ python import_agenda.py <xls.input>
-    - May need remove interview_test.db instance if making modifications to import. 
 5. Call lookup: $ python lookup_agenda.py <column> <value>
     - If your input format resulted in program termination or unexpected results, please refer to the error message or the "Calling Lookup" sections below.
 
