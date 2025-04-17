@@ -30,13 +30,14 @@ def store_db(df, sessions_table):
 
     """"
     Refinements/Task List:
-    - PRIMARY FUNCTION: add all speakers table (character issues)
     - PRIMARY FUNCTION: ensure that speaker publications are getting updated correctly
         - either do some kind of tallying or pass name as a parameter as well
         - appears to be functioning fine!
+    - STRETCH: try to understand why "Tim Harris" entry is not getting recognized
     - ERROR HANDLING: 
         - complete error handling for invalid df getting passed
         - put any db functions into a try-catch block
+    - (Completed) PRIMARY FUNCTION: add all speakers table (character issues)
     """
 
     prev_session = 0
@@ -146,9 +147,10 @@ if __name__ == "__main__":
     print("Command line checks...")
     if len(sys.argv) < 2:
         print("Not enough arguments. Please try again with the following form: ")
-        
+        sys.exit()
     elif len(sys.argv) > 2:
         print("Too many arguments. Please try again with the following form: ")
+        sys.exit()
         
     print("Entering main function...")
     excel_name = sys.argv[1]
