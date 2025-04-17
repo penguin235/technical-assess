@@ -29,12 +29,22 @@ def store_db(df, sessions_table):
     print("Storing df into a db instance...")
 
     """"
-    Requirements:
-    - limit pushing NaN values -> then fixed in lookup agenda
+    Refinements/Task List:
+    - PRIMARY FUNCTION: ensure that speaker publications are getting updated correctly
+        - either do some kind of tallying or pass name as a parameter as well
+        - appears to be functioning fine!
+    - STRETCH: try to understand why "Tim Harris" entry is not getting recognized
+    - ERROR HANDLING: 
+        - complete error handling for invalid df getting passed
+        - put any db functions into a try-catch block
+    - (Completed) PRIMARY FUNCTION: add all speakers table (character issues)
     """
 
     prev_session = 0
     # TODO: add error handling for checking instances of tables and of df
+
+    # TODO: create a speakers instance
+
 
     # value template
     value = {"ID": 0, 
@@ -55,32 +65,59 @@ def store_db(df, sessions_table):
         value["ID"] = index
         value["date"] = temp_dict['*Date']
         value["time_start"] = temp_dict['*Time Start']
-        value["time_start"] = temp_dict['*Time End']
+        value["time_end"] = temp_dict['*Time End']
         value["title"] = temp_dict['*Session Title']
         value["location"] = temp_dict['Room/Location']
         value["description"] = temp_dict['Description']
         value["speaker"] = temp_dict['Speakers']
 
+        # cleaning up values for NaN
         for v in value.keys():
             if (type(value[v]) == float):
                 value[v] = "None Present"
-        
+
+        # contribute to speakers table
+        # get the list of speakers
+
+        if value["speaker"] != "None Present":
+            for speaker in value["speaker"].split(";"):
+                print("Processing this speaker:", speaker)
+            
+                # should only be one value in standard return array
+                print("Identifying if there are existing publications for speaker....")
+                standard_return = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
+                # this is a new speaker - insert
+                if (len(standard_return) == 0):
+                    print("No existing publications found for speaker. Inserting new entry in speaker table...")
+                    speakers_table.insert({"name": speaker, "session_ids": str(index) + ";", "session_titles": value["title"] + ";", "num_sessions": str(1)})
+                elif (speaker != "Tim Harris"):
+                    # if this is not a new speaker - update
+                    print("Existing publications found for speaker. Performing an update on speakers...")
+                    updating_id = standard_return[0]["session_ids"] + str(index) + ";"
+                    updating_titles = standard_return[0]["session_titles"] + value["title"] + ";"
+                    # updating_num_sessions = int(standard_return[0]["num_sessions"]) + 1
+                    speakers_table.update({ "session_ids": updating_id }, { "session_titles": updating_titles })
+                
+                successful_insert = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
+                #print("Speaker:", successful_insert[0]["name"], "now has", successful_insert[0]["num_sessions"], "sessions")
+                print()
+        # identifying if session or subsession
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
             value["parent"] = str(-1)
             sessions_table.insert(value)
-            print("Succesfully added this -> session: ", value)
+            #print("Succesfully added this -> session: ", value)
             print()
             prev_session = index
             session_name = value["title"]
 
         if ((row['*Session or \nSub-session(Sub)']) == "Sub"):
-            print("Entering sub function")
+            # print("Entering sub function")
 
             value["parent"] = str(prev_session)
             value["parent_title"] = session_name
             sessions_table.insert(value)
-            print("Succesfully added this -> subsession: ", value)
+            #print("Succesfully added this -> subsession: ", value)
             print()
         
             
@@ -110,9 +147,10 @@ if __name__ == "__main__":
     print("Command line checks...")
     if len(sys.argv) < 2:
         print("Not enough arguments. Please try again with the following form: ")
-        
+        sys.exit()
     elif len(sys.argv) > 2:
         print("Too many arguments. Please try again with the following form: ")
+        sys.exit()
         
     print("Entering main function...")
     excel_name = sys.argv[1]
@@ -125,7 +163,14 @@ if __name__ == "__main__":
     # creating tables instances
     print("Creating table instance....")
     sessions_table = db_table("Sessions", session_schema)
+
+    speaker_schema = {"name": "text", 
+                    "session_ids": "text", 
+                    "session_titles": "text", 
+                    "num_sessions": "text"}
     
+    speakers_table = db_table("Speakers", speaker_schema)
+
     # parsing and storing file in excel
     print("Calling parse_store_excel...")
     parse_store_excel(excel_name, sessions_table)

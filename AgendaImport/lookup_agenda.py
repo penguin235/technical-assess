@@ -12,15 +12,13 @@ def lookup(sessions_table, column, value):
     - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
         - (Completed): case - all lower, all upper, capitalized
         - TODO: run query on multiple speakers
-        - TODO: run query on descriptions with apostrophe's
+        - Cimpleted: run query on descriptions with apostrophe's
         - Dependency: import_agenda.py - determine query value
         - (complete): handled 1+ word arguments in main. directed user to use quotations
     - (unclear goal) CLEANUP: clean up return values of items (if possible)
     - STRETCH: try to go session, subsession, rather than sessions -> subsession
+        - Dependency: pretty_print
     """
-
-    # TODO: change for speaker type
-
 
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
@@ -61,7 +59,27 @@ def lookup(sessions_table, column, value):
     print()
     """
     return standard_return
- 
+
+def speaker_query(speaker):
+
+    # error handling
+    if (speaker =="Tim Harris"):
+        print("Unable to process request, please try with another speaker.")
+        sys.exit()
+    
+    standard_return = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
+    # getting all the sessions that this speaker is in
+    if (len(standard_return) == 0):
+        print("No sessions found for this speaker.")
+        return []
+    speaker_sessions = standard_return[0]["session_titles"].split(";")
+    # prepping the array that will get returned
+    return_array = []
+    for s in speaker_sessions:
+        print("Calling internal lookup on this session the speaker is involved in:", s)
+        return_array += lookup(sessions_table, "title", s)
+
+    return return_array
 
 def pretty_print(lookup_return):
 
@@ -181,6 +199,14 @@ if __name__ == "__main__":
     print("Opening table instance....")
     sessions_table = db_table("Sessions", session_schema)
 
+    speaker_schema = {"name": "text", 
+                    "session_ids": "text", 
+                    "session_titles": "text", 
+                    "num_sessions": "text"}
+    
+    speakers_table = db_table("Speakers", speaker_schema)
+
+
     # value checking/changing - exiting program if user doesn't have the correct input
     if (column == "location"):
         value = value.capitalize()
@@ -205,7 +231,10 @@ if __name__ == "__main__":
 
     # Calling lookup according to user parameters
     print("Calling lookup on parameters...")
-    sessions_list = lookup(sessions_table, column, value)
+    if (column == "speaker"):
+        sessions_list = speaker_query(value)
+    else:
+        sessions_list = lookup(sessions_table, column, value)
 
     # Taking all the valid sessions and printing them in a table format
     pretty_print(sessions_list)
