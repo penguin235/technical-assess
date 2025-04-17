@@ -13,8 +13,8 @@ Function: opens excel file, puts excel information into a df, returns dataframe,
 
 def create_df(ex_name):
 
-    print("Opening excel file and creating data frame\n")
-    print("Creating a data frame to make it easier to store into db...\n")
+    print("Opening excel file and creating data frame")
+    print("Creating a data frame to make it easier to store into db...")
     df = pd.read_excel(ex_name, skiprows=14)
     #print(df)
     return df
@@ -26,7 +26,7 @@ Function: puts df into a db
 
 """
 def store_db(df, sessions_table):
-    print("Storing df into a db instance...\n")
+    print("Storing df into a db instance...")
 
     """"
     Refinements/Task List:
@@ -128,12 +128,12 @@ Function: calls other functions
 def parse_store_excel(ex_name, sessions_table):
 
 
-    print("Parsing excel file and storing into a data frame in parse_store_excel..\n")
+    print("Parsing excel file and storing into a data frame in parse_store_excel..")
     df = create_df(ex_name)
 
     # TODO: add error handling for invalid db
     
-    print("Storing dataframe in db in parse_store_excel...\n")
+    print("Storing dataframe in db in parse_store_excel...")
     store_db(df, sessions_table)
     
 ########################################################
@@ -141,7 +141,7 @@ def parse_store_excel(ex_name, sessions_table):
 if __name__ == "__main__":
 
     # parse command line arguments
-    print("Command line checks...\n")
+    print("Command line checks...")
     if len(sys.argv) < 2:
         print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
         sys.exit()
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         print("Not enough arguments. Please try again with the following form: $ python import_agenda.py \"excel_spreadsheet.xls\"")
         sys.exit()
         
-    print("Entering main function...\n")
+    print("Entering main function...")
     excel_name = sys.argv[1]
     
     # creating schema for session
@@ -158,7 +158,7 @@ if __name__ == "__main__":
                       "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"}    
 
     # creating tables instances
-    print("Creating session table instance....\n")
+    print("Creating session table instance....")
     sessions_table = db_table("Sessions", session_schema)
 
     speaker_schema = {"name": "text", 
@@ -166,10 +166,10 @@ if __name__ == "__main__":
                     "session_titles": "text", 
                     "num_sessions": "text"}
     
-    print("Creating speaker table instance....\n")
+    print("Creating speaker table instance....")
     speakers_table = db_table("Speakers", speaker_schema)
 
     # parsing and storing file in excel
-    print("Calling parse_store_excel...\n")
+    print("Calling parse_store_excel...")
     parse_store_excel(excel_name, sessions_table)
-    print("Parsing and storing into database table completed.\n")
+    print("Parsing and storing into database table completed.")
