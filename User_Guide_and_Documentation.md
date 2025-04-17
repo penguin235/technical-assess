@@ -1,5 +1,3 @@
-DOCUMENTATION
-
 # User and Developer Guide 
 
 # How to Run Program
