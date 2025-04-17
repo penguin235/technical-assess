@@ -10,18 +10,20 @@ def lookup(sessions_table, column, value):
     """
     Refinements/Task List:
     - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
+        - TODO: case - all lower, all upper, capitalized
+        - Dependency: import_agenda.py - determine query value
+        - (complete): handled 1+ word arguments in main. directed user to use quotations
     - (unclear goal) CLEANUP: clean up return values of items (if possible)
     - STRETCH: try to go session, subsession, rather than sessions -> subsession
-    - (Completed) PRIMARY FUNCTION: from each table entry: ensure everything needs to be returned 
-        - (Completed) DEPENDENCY: import_agenda.py - ensure everything is stored correctly
-    - (Completed) CLEANUP: remove excessive print statements / outputs
-    
     """
 
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
+
+    # possible implementation: run queries on upper, lower, capitalized, and then create a set
+
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
     print("Extracted", len(standard_return), "sessions and subsessions that match this parameter")
 
@@ -141,10 +143,11 @@ if __name__ == "__main__":
 
     # parse command line arguments
     if len(sys.argv) < 3:
-        print(f"Not enough arguments. Please try again with the following form: python [lookup_agenda.py] [column] [value]")
+        print(f"Not enough arguments. Please try again with the following form: $ python [lookup_agenda.py] column value")
         sys.exit()
     elif len(sys.argv) > 3:
-        print("Too many arguments. Please try again with the following form: python [lookup_agenda.py] [column] [value]")
+        print("Too many arguments. Please try again with the following form: $ python [lookup_agenda.py] [column] [value]")
+        print("If your column or value argument is more than one word, please use the following format: $ python [lookup_agenda.py] \"column\" \"value\"")
         sys.exit()
         
     # check if legitmate column
