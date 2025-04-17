@@ -111,6 +111,7 @@ class db_table:
     #
     def insert(self, item):
         # build columns & values queries
+        '''
         columns_query = ", ".join(item.keys())
         values_query  = ", ".join([ "'%s'" % v for v in item.values()])
         
@@ -119,6 +120,15 @@ class db_table:
         # In the context of this project, this is fine (no risk of user malicious input)
         cursor = self.db_conn.cursor()
         cursor.execute("INSERT INTO %s (%s) VALUES (%s)" % (self.name, columns_query, values_query))
+        '''
+        # Utilized AI Generated tools to how the strings were getting passed into the "INSERT statement"
+
+        columns_query = ", ".join(item.keys()) # Same as before
+        placeholders = ", ".join(["?"] * len(item)) # Creating a placeholder array for values 
+        values = list(item.values())
+        query = f"INSERT INTO {self.name} ({columns_query}) VALUES ({placeholders})"
+        cursor = self.db_conn.cursor()
+        cursor.execute(query, values)
         cursor.close()
         self.db_conn.commit()
         return cursor.lastrowid
