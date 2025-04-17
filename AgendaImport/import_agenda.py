@@ -6,21 +6,27 @@ import argparse
 import sys
 
 """
-Inputs: excel file name
+Inputs: @param: excel file name
 Ouputs: error if there is an issue, df if not issue
-Function: opens excel file, puts excel information into a df, returns dataframe, closes excel file
+Function:
+    - opens excel file
+    - puts excel information into a df
+    - returns dataframe
 """
-
 def create_df(ex_name):
 
     print("Opening excel file and creating data frame...")
     print("Creating a data frame to make it easier to store into db...")
-    df = pd.read_excel(ex_name, skiprows=14)
+    try:
+        df = pd.read_excel(ex_name, skiprows=14)
+        return df
+    except FileNotFoundError:
+        print("Excel file not found.")
+
     #print(df)
-    return df
 
 """
-Inputs: dataframe of an excel instance, db_instance
+Inputs: @param: dataframe of an excel instance, db_instance
 Ouputs: error if there is an issue
 Function: puts df into a db
 
@@ -76,7 +82,7 @@ def store_db(df, sessions_table):
                 value[v] = "None Present"
 
         # contribute to speakers table
-        # get the list of speakers
+        # get the list of speakers and either add or update their value
 
         if value["speaker"] != "None Present":
             for speaker in value["speaker"].split(";"):
@@ -88,23 +94,30 @@ def store_db(df, sessions_table):
                 # this is a new speaker - insert
                 if (len(standard_return) == 0):
                     #print("No existing publications found for speaker. Inserting new entry in speaker table...")
-                    speakers_table.insert({"name": speaker, "session_ids": str(index) + ";", "session_titles": value["title"] + ";", "num_sessions": str(1)})
+                    try:
+                        speakers_table.insert({"name": speaker, "session_ids": str(index) + ";", "session_titles": value["title"] + ";", "num_sessions": str(1)})
+                    except:
+                        print("Error inserting speaker into speakers table")
                 elif (speaker != "Tim Harris"):
                     # if this is not a new speaker - update
                     #print("Existing publications found for speaker. Performing an update on speakers...")
                     updating_id = standard_return[0]["session_ids"] + str(index) + ";"
                     updating_titles = standard_return[0]["session_titles"] + value["title"] + ";"
                     # updating_num_sessions = int(standard_return[0]["num_sessions"]) + 1
-                    speakers_table.update({ "session_ids": updating_id }, { "session_titles": updating_titles })
+                    try:
+                        speakers_table.update({ "session_ids": updating_id }, { "session_titles": updating_titles })
+                    except:
+                        print("Error updating field in speakers_table")
                 
-                successful_insert = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
-                #print("Speaker:", successful_insert[0]["name"], "now has", successful_insert[0]["num_sessions"], "sessions")
-                #print()
+
         # identifying if session or subsession
         if ((row['*Session or \nSub-session(Sub)']) == "Session"):
     
             value["parent"] = str(-1)
-            sessions_table.insert(value)
+            try:
+                sessions_table.insert(value)
+            except:
+                print("Error adding session into sessions table")
             #print("Succesfully added this -> session: ", value)
             #print()
             prev_session = index
@@ -115,7 +128,10 @@ def store_db(df, sessions_table):
 
             value["parent"] = str(prev_session)
             value["parent_title"] = session_name
-            sessions_table.insert(value)
+            try:
+                sessions_table.insert(value)
+            except:
+                print("Error adding subsession into sessions table")
             #print("Succesfully added this -> subsession: ", value)
             #print()
         
@@ -133,10 +149,13 @@ def parse_store_excel(ex_name, sessions_table):
     # creating df
     print("Parsing excel file and storing into a data frame in parse_store_excel..")
     df = create_df(ex_name)
-    
-    # storing db
-    print("Storing dataframe in db in parse_store_excel...")
-    store_db(df, sessions_table)
+    if df is None:
+        print("No dataframe found. Try Again")
+        sys.exit(1)
+    else:
+        # storing db
+        print("Storing dataframe in db in parse_store_excel...")
+        store_db(df, sessions_table)
     
 ########################################################
 """
