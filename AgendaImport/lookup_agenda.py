@@ -10,11 +10,11 @@ def lookup(sessions_table, column, value):
     """
     Refinements/Task List:
     - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
-    - PRIMARY FUNCTION: from each table entry: ensure everything needs to be returned
-        - DEPENDENCY: import_agenda.py - ensure everything is stored correctly
-    - CLEANUP: remove excessive print statements / outputs
-    - CLEANUP: clean up return values of items (if possible)
+    - (unclear goal) CLEANUP: clean up return values of items (if possible)
     - STRETCH: try to go session, subsession, rather than sessions -> subsession
+    - (Completed) PRIMARY FUNCTION: from each table entry: ensure everything needs to be returned 
+        - (Completed) DEPENDENCY: import_agenda.py - ensure everything is stored correctly
+    - (Completed) CLEANUP: remove excessive print statements / outputs
     
     """
 
@@ -23,33 +23,36 @@ def lookup(sessions_table, column, value):
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
-    print("Extracted", len(standard_return), " sessions and subsessions that match this parameter")
+    print("Extracted", len(standard_return), "sessions and subsessions that match this parameter")
 
+    """
     # parse through for speakers, etc. just to make sure information is accurate
     for i in standard_return:
         print("ID:", i["id"], " | Title:", i["title"], " | Parent:", i["parent"])
     print()
-
+    """
+    
     print("Retrieving subsessions of selected sessions...")
     # check for subsections within the standard array
 
-    # somethings going wrong here
+    # earlier statment saying something was going wrong here - confirm proper function
     for i, v in enumerate(standard_return):
         if int(v["parent"]) < 0:
             # this is a session
             parent_key = v["id"]
-            parent_title = v["title"]
-            subsessions = sessions_table.select(['id', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {"parent": str(parent_key)})
+            subsessions = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {"parent": str(parent_key)})
             # print("Adding a collection of subsessions:", subsessions)
             standard_return += subsessions
 
+    
+    """
     print("This is the final collection of sessions and subsessions that match " \
           "parameters along with subsessions that are affiliated with selected sessions: ",
         len(standard_return))
     for i in standard_return:
         print("ID:", i["id"], "| Title:", i["title"], " | Parent_Title:", i["parent_title"])
     print()
-
+    """
     return standard_return
  
 
@@ -57,21 +60,29 @@ def pretty_print(lookup_return):
 
     """
     Refinement/Tasks:
-    - PRIMARY FUNCTION: type checking in return values (NaN, String)
-        - DEPENDENCY: lookup function - altering what gets returned from look up
-        - DEPENDENCY: import_agenda.py
-    - PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
     - PRIMARY FUNCTION: improve table view (cutting off large returns, aligning columns), and possibly add an extended list
+    - PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
+        - Dependency: table view within pretty pring
     - STRETCH: prompt to ask to see extended few of an entry that has been cutoff
+    - (Completed) PRIMARY FUNCTION: type checking in return values (NaN, String)
+        - (Complete) DEPENDENCY: lookup function - altering what gets returned from look up
+        - (Completed) DEPENDENCY: import_agenda.py
     """
     print("Pretty printing the lookup values...")
     print("Creating chart/table...")
 
     # what to print: Title, Location, Description, Session/Subsession of What
+
+    # returned values: 'id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title']
+    # printed values:  'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker'
     tabulate_table = []
     for i in lookup_return:
         # print("processing this item right now: ", i)
         entry = []
+
+        entry.append(i["date"])
+        entry.append(i["time_start"])
+        entry.append(i["time_end"])
 
         # building output string
         # output_string = i["title"] + "      " 
@@ -84,16 +95,8 @@ def pretty_print(lookup_return):
         elif isinstance(i["title"], NoneType):
             # output_string += "      "
             entry.append("")
-        
-        
-        # type checking for location
-        if isinstance(i["location"], NoneType):
-            # output_string += "      "
-            entry.append("")
-        else:
-            # output_string += i["location"] + "      "
-            entry.append(i["location"])
-
+       
+        entry.append(i["location"])
         
         # type and size checking for description
         if isinstance(i["description"], str) and len(i["description"]) < 40:
@@ -105,6 +108,9 @@ def pretty_print(lookup_return):
         elif isinstance(i["description"], NoneType):
             # output_string += "" + "      "
             entry.append("")
+        
+        entry.append(i["speaker"])
+
 
         # printing if session or subsession
         if(int(i["parent"]) < 0):
@@ -130,8 +136,7 @@ if __name__ == "__main__":
 
     """
     Refinements/Tasks
-    - type checking for values (either specifiying to user or)
-    - more proper error handling: done
+    - PRIMARY FUNCTION: raise error instead of doing sys.exit()
     """
 
     # parse command line arguments
