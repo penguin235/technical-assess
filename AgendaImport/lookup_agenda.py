@@ -3,30 +3,22 @@ from db_table import db_table
 import pandas as pd
 import argparse
 import sys
-import tabulate
 
+
+"""
+Input: @param: sessions_table, column, value
+Output: array of all sessions and subsessions that match the query value
+Function:
+    - Extracts sessions and subsessions that directly match the parameter
+    - Goes through the sessions and extracts associated subsessions
+"""
 def lookup(sessions_table, column, value):
 
-    """
-    Refinements/Task List:
-    - PRIMARY FUNCTION: replace any '' with '
-    - (Completed) PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
-        - (Completed): case - all lower, all upper, capitalized
-        - (Completed): run query on multiple speakers
-        - (Completed): run query on descriptions with apostrophe's
-        - Dependency: import_agenda.py - determine query value
-        - (complete): handled 1+ word arguments in main. directed user to use quotations
-    - (unclear goal) CLEANUP: clean up return values of items (if possible)
-    - STRETCH: try to go session, subsession, rather than sessions -> subsession
-        - Dependency: pretty_print
-    """
-
+   
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
-
-    # improving case sensitivity
 
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
     print("Extracted", len(standard_return), "sessions and subsessions that match this parameter.")
@@ -49,7 +41,6 @@ def lookup(sessions_table, column, value):
             subsessions = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {"parent": str(parent_key)})
             # print("Adding a collection of subsessions:", subsessions)
             standard_return += subsessions
-
     
     """
     print("This is the final collection of sessions and subsessions that match " \
@@ -61,12 +52,20 @@ def lookup(sessions_table, column, value):
     """
     return standard_return
 
+
+"""
+Input: @param: speaker
+Output: Error if it is a certain speaker
+Function:
+    - does a query on the speakers table to identify what sessions the speaker is associated
+    - calls lookup on all the sessions the speaker is associcated with
+"""
 def speaker_query(speaker):
 
     # error handling
     if (speaker =="Tim Harris"):
         print("Unable to process request, please try with another speaker.")
-        sys.exit()
+        sys.exit(1)
     
     standard_return = speakers_table.select(['name', 'session_ids', 'session_titles', 'num_sessions'], {"name": speaker})
     # getting all the sessions that this speaker is in
@@ -82,32 +81,23 @@ def speaker_query(speaker):
 
     return return_array
 
+"""
+Input: @params: lookup_return array
+Output: pretty printed output of query
+Function:
+    - only prints out spreadsheet information. nothing about the id of session
+    - uses spacing and indenting for a cleaner output
+"""
 def pretty_print(lookup_return):
 
-    """
-    Refinement/Tasks:
-    - PRIMARY FUNCTION: replace single quotes again
-        - Dependency: lookup perhaps
-    - STRETCH: create an output text
-    - (Completed) PRIMARY FUNCTION: improve table view (cutting off large returns, aligning columns), and possibly add an extended list
-    - (Completed) PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
-        - Dependency: table view within pretty pring
-    - (Not Necessary) STRETCH: prompt to ask to see extended few of an entry that has been cutoff
-    - (Completed) PRIMARY FUNCTION: type checking in return values (NaN, String)
-        - (Complete) DEPENDENCY: lookup function - altering what gets returned from look up
-        - (Completed) DEPENDENCY: import_agenda.py
-    """
-    print("Pretty printing the lookup values...")
     if (len(lookup_return) == 0):
         print()
         print("No results found for query. If this is unexpected behavior, please refer to \"User_Guide_and_Documentation.md\" for proper input formatting.")
 
-    # what to print: Title, Location, Description, Session/Subsession of What
-
     # returned values: 'id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title']
     # printed values:  'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker'
-    #tabulate_table = []
 
+    print("Pretty printing the lookup values...")
     count = 1 
     for i in lookup_return:
         # print("processing this item right now: ", i)
@@ -132,59 +122,13 @@ def pretty_print(lookup_return):
         print()
         print("=====================================================================")
         count += 1
-
-        """
-        entry = []
-        entry.append(i["date"])
-        entry.append(i["time_start"])
-        entry.append(i["time_end"])
-
-        # building output string
-        # output_string = i["title"] + "      " 
-        if isinstance(i["title"], str) and len(i["title"]) < 60:
-            # output_string += (i["description"]) + "      "
-            entry.append(i["title"])
-        elif isinstance(i["title"], str) and len(i["title"]) > 60:
-            # output_string += (i["description"])[:30] + "..." + "      "
-            entry.append((i["title"])[:60])
-        elif isinstance(i["title"], NoneType):
-            # output_string += "      "
-            entry.append("")
-       
-        entry.append(i["location"])
-        
-        # type and size checking for description
-        if isinstance(i["description"], str) and len(i["description"]) < 40:
-            # output_string += (i["description"]) + "      "
-            entry.append(i["description"])
-        elif isinstance(i["description"], str) and len(i["description"]) > 40:
-            # output_string += (i["description"])[:30] + "..." + "      "
-            entry.append((i["description"])[:40])
-        elif isinstance(i["description"], NoneType):
-            # output_string += "" + "      "
-            entry.append("")
-        
-        entry.append(i["speaker"])
-
-
-        # printing if session or subsession
-        if(int(i["parent"]) < 0):
-            # output_string += "Session"
-            entry.append("Session")
-        else:
-            # output_string += "Session of " + i["parent_title"]
-            entry.append("Session of " + i["parent_title"])
-        
-        #print(output_string)
-        tabulate_table.append(entry)
-
-    table = tabulate.tabulate(
-        tabulate_table,
-        headers = ["Session Title", "Location", "Abrreviated Description", "Session or Subsession"],
-        tablefmt="grid"
-    )
-    """
-    
+"""
+Main:
+- addresses command line inputs
+- contains schema for sessions and speakers table
+- creates instances of `db_table` for sessions and speakers
+- calls either speaker_query or lookup depending on command line input
+"""
 
 
 if __name__ == "__main__":
