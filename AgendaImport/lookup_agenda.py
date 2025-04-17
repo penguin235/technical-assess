@@ -10,19 +10,24 @@ def lookup(sessions_table, column, value):
     """
     Refinements/Task List:
     - PRIMARY FUNCTION: parameters: make value case-sensitive, type-safe (just can also give users a guide)
-        - TODO: case - all lower, all upper, capitalized
+        - (Completed): case - all lower, all upper, capitalized
+        - TODO: run query on multiple speakers
+        - TODO: run query on descriptions with apostrophe's
         - Dependency: import_agenda.py - determine query value
         - (complete): handled 1+ word arguments in main. directed user to use quotations
     - (unclear goal) CLEANUP: clean up return values of items (if possible)
     - STRETCH: try to go session, subsession, rather than sessions -> subsession
     """
 
+    # TODO: change for speaker type
+
+
     print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
 
-    # possible implementation: run queries on upper, lower, capitalized, and then create a set
+    # improving case sensitivity
 
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
     print("Extracted", len(standard_return), "sessions and subsessions that match this parameter")
@@ -157,17 +162,46 @@ if __name__ == "__main__":
         print("Please pick a valid column can pick any of these: date, time_start, time_end, title, location, description, speaker")
         sys.exit()
     
-    # set value parameter
     value = sys.argv[2]
     
+    # cleaning up values for NaN, presence of apostrophe
+       
+    if (type(value) == str) and ("\'" in value):
+        (value).replace('\'', '\"')
+        print("Changed!", value)
+    
+    # set value parameter
+    
     # creating schema for session table
-    session_schema = {"ID": "integer PRIMARY KEY", "Date": "text", "Start_Time": "text", 
-                      "End_Time": "text", "Session_Title": "text", "Location": "text",
-                      "Description": "text", "Speakers": "text", "Parent": "text"}    
+    session_schema = {"ID": "integer PRIMARY KEY", "date": "text", "time_start": "text", 
+                      "time_end": "text", "title": "text", "location": "text",
+                      "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"} 
 
     # opening tables instance
     print("Opening table instance....")
     sessions_table = db_table("Sessions", session_schema)
+
+    # value checking/changing - exiting program if user doesn't have the correct input
+    if (column == "location"):
+        value = value.capitalize()
+        print("calling it on this", value)
+    elif (column == "title"):
+        value = value.title()
+    elif (column == "time_start") or (column == "time_end"):
+        if value.find("AM") == -1 and value.find("PM") == -1:
+            print("Please search for a date in the following format: HH:MM AM or HH:MM PM")
+            sys.exit()
+    elif (column == "date"):
+        if value.find("'/'") == -1 or len(value) != 10:
+            print("Please search for a date using the following format: MM/DD/YYYY")
+            sys.exit()
+    elif (column == "speaker"):
+        if len(value.split(" ")) < 2:
+            print("Please search for a speaker with both first and last name (and middle name if applicable) in the following format: \"First Last\"")
+            sys.exit()
+    elif (column == "description"):
+        if value.find("\'") >= 0:
+            value.replace("\'", "\'\'")
 
     # Calling lookup according to user parameters
     print("Calling lookup on parameters...")
