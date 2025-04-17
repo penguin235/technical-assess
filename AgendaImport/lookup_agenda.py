@@ -20,7 +20,7 @@ def lookup(sessions_table, column, value):
         - Dependency: pretty_print
     """
 
-    print("Retrieving all sessions and subsessions that match lookup parameters...\n")
+    print("Retrieving all sessions and subsessions that match lookup parameters...")
 
     # performing lookup on all sessions and subsession
     # retrieving all values instead of just a select few
@@ -28,7 +28,7 @@ def lookup(sessions_table, column, value):
     # improving case sensitivity
 
     standard_return = sessions_table.select(['id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title'], {column: value})
-    print("Extracted", len(standard_return), "sessions and subsessions that match this parameter.\n")
+    print("Extracted", len(standard_return), "sessions and subsessions that match this parameter.")
 
     """
     # parse through for speakers, etc. just to make sure information is accurate
@@ -37,7 +37,7 @@ def lookup(sessions_table, column, value):
     print()
     """
     
-    print("Retrieving subsessions of selected sessions...\n")
+    print("Retrieving subsessions of selected sessions...")
     # check for subsections within the standard array
 
     # earlier statment saying something was going wrong here - confirm proper function
@@ -76,7 +76,7 @@ def speaker_query(speaker):
     # prepping the array that will get returned
     return_array = []
     for s in speaker_sessions:
-        print("Calling internal lookup on this session the speaker is involved in:", s, "\n")
+        print("Calling internal lookup on this session the speaker is involved in:", s)
         return_array += lookup(sessions_table, "title", s)
 
     return return_array
@@ -85,26 +85,52 @@ def pretty_print(lookup_return):
 
     """
     Refinement/Tasks:
-    - PRIMARY FUNCTION: improve table view (cutting off large returns, aligning columns), and possibly add an extended list
-    - PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
+    - PRIMARY FUNCTION: replace single quotes again
+        - Dependency: lookup perhaps
+    - STRETCH: create an output text
+    - (Completed) PRIMARY FUNCTION: improve table view (cutting off large returns, aligning columns), and possibly add an extended list
+    - (Completed) PRIMARY FUNCTION: automate printing as much as possible (rather than individual if statements)
         - Dependency: table view within pretty pring
-    - STRETCH: prompt to ask to see extended few of an entry that has been cutoff
+    - (Not Necessary) STRETCH: prompt to ask to see extended few of an entry that has been cutoff
     - (Completed) PRIMARY FUNCTION: type checking in return values (NaN, String)
         - (Complete) DEPENDENCY: lookup function - altering what gets returned from look up
         - (Completed) DEPENDENCY: import_agenda.py
     """
-    print("Pretty printing the lookup values...\n")
-    print("Creating chart/table...\n")
+    print("Pretty printing the lookup values...")
+    print("Creating chart/table...")
 
     # what to print: Title, Location, Description, Session/Subsession of What
 
     # returned values: 'id', 'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker', 'parent', 'parent_title']
     # printed values:  'date', 'time_start', 'time_end', 'title', 'location', 'description', 'speaker'
-    tabulate_table = []
+    #tabulate_table = []
+    count = 1 
     for i in lookup_return:
         # print("processing this item right now: ", i)
-        entry = []
+        counting = str(count) + ")"
+        print(counting)
+        print("---->", i["title"] )
+        print("--------> Date: ", i["date"])
+        print("--------> Start Time: ", i["time_start"])
+        print("--------> End Time", i["time_end"])
+        print("--------> Location: ", i["location"])
+        print("--------> Speakers:", i["speaker"])
 
+        if(int(i["parent"]) < 0):
+            # output_string += "Session"
+            #entry.append("Session")
+            print("--------> Session or Subsession: Session")
+        else:
+            # output_string += "Session of " + i["parent_title"]
+            print("--------> Session or Subsession: Subsession of",  i["parent_title"])
+        
+        print("--------> Description:", i["description"])
+        print()
+        print("=====================================================================")
+        count += 1
+
+        """
+        entry = []
         entry.append(i["date"])
         entry.append(i["time_start"])
         entry.append(i["time_end"])
@@ -147,14 +173,14 @@ def pretty_print(lookup_return):
         
         #print(output_string)
         tabulate_table.append(entry)
-    
+
     table = tabulate.tabulate(
         tabulate_table,
         headers = ["Session Title", "Location", "Abrreviated Description", "Session or Subsession"],
         tablefmt="grid"
     )
+    """
     
-    print(table)
 
 
 if __name__ == "__main__":
@@ -196,7 +222,7 @@ if __name__ == "__main__":
                       "description": "text", "speaker": "text", "parent": "text", "parent_title": "text"} 
 
     # opening tables instance
-    print("Opening sessions table instance....\n")
+    print("Opening sessions table instance....")
     sessions_table = db_table("Sessions", session_schema)
 
     speaker_schema = {"name": "text", 
@@ -228,9 +254,9 @@ if __name__ == "__main__":
             value.replace("\'", "\'\'")
 
     # Calling lookup according to user parameters
-    print("Calling lookup on query...\n")
+    print("Calling lookup on query...")
     if (column == "speaker"):
-        print("Opening speakers table instance...\n")
+        print("Opening speakers table instance...")
         speakers_table = db_table("Speakers", speaker_schema)
         sessions_list = speaker_query(value)
     else:
